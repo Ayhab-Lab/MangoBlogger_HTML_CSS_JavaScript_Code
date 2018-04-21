@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="utf-8">
+            <base target="_top">
+
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+        <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
+
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+        
+       <script>
+  
+            
+           
+  
+  </script>
+        <style>
+        <!-- similar styles for  all buttons and labels -->
+          
+        </style>
+        
+        
+    </head>
+    
+    <body onload="onloadFunction()">
+        <div id="modalWindow">
+        <div>
+          
+      <input type="checkbox" name="" id="checkbox-1" >
+            <label for="checkbox-1">Enable reports to run automatically</label>
+      </div>
+   
+        
+        
+        <form >
+<!-- This is the main container and everything will be added in this -->
+            
+            <div  id="scheduleSelector"  class="block form-group" style="float:left;padding:10px;" >
+  
+  <!-- create more divs for different selectmenus to fit -->
+  <div style="float:left; padding:5px;" id="label3">
+
+</div>
+  <div id="periodContainer" style="float:left;">
+                
+                </div>
+                <div style="float:left; padding:5px;" id="label1"></div>
+                
+                <div id="nextContainer" style="float:left"></div>
+                <div style="float:left;padding:5px;" id="label2"></div>
+                <div id="lastContainer" style="float:left"></div>
+      
+  
+  <!-- create the submit button and just name the funtion to refer in appscripts -->
+                <br>
+                <button type="button" onclick="startSchedulingReports()" class="action" style="margin-top:20px">SUBMIT</button>
+                <button type="button" onclick="google.script.host.close()"  style="margin-top:20px">Cancel</button>
+                                    
+             </div>
+            
+        </form>
+            </div>
+    </body>
+<script>
+    
+    //create all static arrays dynamically on load
+    var arrPeriod=["Everyhour","EveryDay","Everyweek", "EveryMonth"];
+    var arrHour=[];
+    var arrWeek=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+    var arrDays=["1st","2nd","3rd"];
+    
+    var periodSel, nextSel, lastSel;
+    
+    function onloadFunction(){
+        var i=0;
+        for(i =0; i<24; i++){
+            if(i==0)
+                arrHour.push("midnight - 1 am");
+                
+            else if(i<=10)
+                arrHour.push(i+"am -"+ (i+1)+"am");
+            else if(i==11)
+                arrHour.push(i +" am - 12 pm");
+            else if(i== 12)
+                arrHour.push("12 pm - 1 pm");
+            else if(i>12 && i<23)
+                arrHour.push((i-12)+"pm -"+(i-11)+"pm");
+            else
+                arrHour.push("11 pm - midnight");
+            
+        }
+        
+        for(i=4;i<32; i++){
+            if(i==21 || i==31)
+                arrDays.push(i+"st");
+            else if(i== 22)
+                arrDays.push("22nd");
+            else if(i==23)
+                arrDays.push("23rd");
+            else 
+            arrDays.push(i+"th");
+        }
+      
+        
+    }
+    
+   
+     var toggle=false;
+    //when user wants automatic reports               
+$("#checkbox-1").on('click',function checkBoxFunction(){
+toggle=!toggle;
+    console.log(toggle);
+if(toggle){
+ document.getElementById("label2").innerHTML=" ";
+        
+    
+    document.getElementById("nextContainer").innerHTML=" ";
+        document.getElementById("periodContainer").innerHTML=" ";
+    document.getElementById("label1").innerHTML=" ";
+
+        
+        document.getElementById("lastContainer").innerHTML=" ";
+    
+    //create a select menu with required fields
+     periodSel= document.createElement('select');
+    setMenu(arrPeriod,periodSel);
+    var label=    document.createElement("LABEL");
+           label.innerHTML="Schedule reports to run";
+            document.getElementById("label3").appendChild(label);
+    periodSel.addEventListener('change',function(){
+var period;
+       for(i =0; i<4; i++)
+           if(periodSel.options[i].selected==true)
+               period=periodSel.options[i].text;
+        
+        
+           periodButtonFunction(period);    });
+            document.getElementById("nextContainer").innerHTML=" ";
+        
+        document.getElementById("lastContainer").innerHTML=" ";
+        document.getElementById("label2").innerHTML=" ";
+               document.getElementById("label1").innerHTML=" ";
+
+            
+   
+    document.getElementById("periodContainer").appendChild(periodSel);
+}
+    else
+    {
+            document.getElementById("label1").innerHTML=" ";
+        document.getElementById("label2").innerHTML=" ";
+        document.getElementById("label3").innerHTML=" ";
+
+        document.getElementById("periodContainer").innerHTML=" ";
+        
+ document.getElementById("nextContainer").innerHTML=" ";
+        
+        document.getElementById("lastContainer").innerHTML=" ";
+       
+google.script.run.showAndDeleteTriggers();
+
+    }
+});
+
+    
+    
+    
+//setting the select menus
+    function setMenu(arr,sel){
+    console.log("Inside Set Properties");
+    var i=0;
+    for(i=0;i<arr.length; i++){
+        sel.add(new Option(arr[i], i), null);
+    }
+    
+}
+  
+    
+    //Making the hours select menu visible 
+    function periodButtonFunction(text){
+        console.log(text.toLowerCase());
+        //creating the select menu for the next field
+        
+         nextSel= document.createElement('select');
+      
+        
+        
+        
+        if(text.toLowerCase()==="everyday"){
+    setMenu(arrHour,nextSel);
+    document.getElementById("nextContainer").innerHTML=" ";
+        
+        document.getElementById("lastContainer").innerHTML=" ";
+        document.getElementById("label2").innerHTML=" ";
+               document.getElementById("label1").innerHTML=" ";
+
+       var label=    document.createElement("LABEL");
+           label.innerHTML=" between ";
+            document.getElementById("label1").appendChild(label);
+            document.getElementById("lastContainer").innerHTML=" ";
+    document.getElementById("nextContainer").appendChild(nextSel);
+        }
+        else if(text.toLowerCase()==="everymonth"){
+            setMenu(arrDays,nextSel);
+            document.getElementById("nextContainer").innerHTML=" ";
+              //additional select menu for 
+        lastSel = document.createElement('select');
+        setMenu(arrHour,lastSel);
+        
+        document.getElementById("lastContainer").innerHTML=" ";
+        document.getElementById("label2").innerHTML=" ";
+               document.getElementById("label1").innerHTML=" ";
+
+            var label1=document.createElement("LABEL");
+           label1.innerHTML="  on the  ";
+            document.getElementById("label1").appendChild(label1);
+            var label=    document.createElement("LABEL");
+           label.innerHTML=" between ";
+            document.getElementById("label2").appendChild(label);
+            
+             
+    document.getElementById("nextContainer").appendChild(nextSel);
+            document.getElementById("lastContainer").appendChild(lastSel);
+           
+        }
+        else if(text.toLowerCase()==="everyweek"){
+            setMenu(arrWeek,nextSel);
+              //additional select menu for 
+        lastSel = document.createElement('select');
+        setMenu(arrHour,lastSel);
+            document.getElementById("nextContainer").innerHTML=" ";
+        
+        document.getElementById("lastContainer").innerHTML=" ";
+        document.getElementById("label2").innerHTML=" ";
+               document.getElementById("label1").innerHTML=" ";
+
+            
+             var label1=    document.createElement("LABEL");
+           label1.innerHTML="  on  ";
+            document.getElementById("label1").appendChild(label1);
+            var label=    document.createElement("LABEL");
+           label.innerHTML=" between ";
+            document.getElementById("label2").appendChild(label);
+    document.getElementById("lastContainer").appendChild(lastSel);
+            document.getElementById("nextContainer").appendChild(nextSel);
+        }
+        else{
+        document.getElementById("nextContainer").innerHTML=" ";
+        
+        document.getElementById("lastContainer").innerHTML=" ";
+        document.getElementById("label2").innerHTML=" ";
+               document.getElementById("label1").innerHTML=" ";
+
+          
+        }
+    
+        
+    
+    
+     //add all the nodes into respecteive parents
+   
+        
+    
+    
+    }
+    
+    
+    //creating the function to handle the event of the newly created button
+    
+    function startSchedulingReports(){
+        console.log('Entered submit function');
+        var a=[];
+        var sel1= periodSel;
+        for(i=0;i<sel1.options.length;i++){
+               if(sel1.options[i].selected==true)
+                a.push(sel1.options[i].text);
+                console.log(a.length);
+                }
+        if(nextSel!=undefined){
+        var sel1= nextSel;
+        for(i=0;i<sel1.options.length;i++){
+            if(sel1.options[i].selected==true)
+                a.push(sel1.options[i].value);
+                
+                }
+        
+        }
+        if(lastSel!=undefined){
+        console.log(lastSel.options);
+    var sel1= lastSel;
+        for(i=0;i<sel1.options.length;i++){
+            if(sel1.options[i].selected==true)
+            a.push(sel1.options[i].value);
+            
+            }
+        }
+        for(i=0; i<a.length; i++)
+        console.log(a.length);
+google.script.run.callingTheScheduledFunction(a); 
+google.script.host.close();
+    }
+    
+    //create global variables for the SELECTED options for the submit button function to work with
+    </script>
+
+</html>
