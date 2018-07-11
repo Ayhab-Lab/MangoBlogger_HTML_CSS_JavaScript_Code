@@ -1,0 +1,23 @@
+{
+  "name": "google-search-console",
+  "version": "1.0.0",
+  "description": "Google search console api written in NodeJs to fetch and show the results from the server, details like cliks, impressions, CTR, are among the few things that are returned.",
+  "main": "app.js",
+  "scripts": {
+    "test": "npm install"
+  },
+  "keywords": [
+    "Node",
+    "google",
+    "search",
+    "console",
+    "api"
+  ],
+  "author": "Akhilesh Pandey",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "ejs": "^2.6.1",
+    "express": "^4.16.3"
+  }
+}
